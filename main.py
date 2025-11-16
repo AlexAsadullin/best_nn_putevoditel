@@ -48,7 +48,7 @@ async def start_handler(message: types.Message):
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text='Нижний Новгород', callback_data='nizniy')],
-        [InlineKeyboardButton(text='Нижегородская Область', callback_data='directions')]
+        [InlineKeyboardButton(text='Нижегородская Область', callback_data='directions')],
     ])
     photo = FSInputFile(WELCOME_PHOTO_PATH)
     await bot.send_photo(
@@ -58,8 +58,24 @@ async def start_handler(message: types.Message):
         reply_markup=keyboard
     )
 
+@dp.callback_query(lambda c: c.data == 'main_menu')
+async def main_menu_handler(callback: types.CallbackQuery):
+    await callback.answer()
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text='Нижний Новгород', callback_data='nizniy')],
+        [InlineKeyboardButton(text='Нижегородская Область', callback_data='directions')],
+    ])
+    photo = FSInputFile(WELCOME_PHOTO_PATH)
+    await bot.send_photo(
+        callback.message.chat.id,
+        photo=photo,
+        caption='Здравствуйте! Это бот-путеводитель по Нижегородской области, выберите направление:',
+        reply_markup=keyboard
+    )
+
 @dp.callback_query(lambda c: c.data == 'nizniy')
 async def nizniy_handler(callback: types.CallbackQuery):
+    await callback.answer()
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text='Нижегородский Кремль', callback_data='nizhegorodskiy-kreml')],
         [InlineKeyboardButton(text='Чкаловская лестница', callback_data='chkalovskaya-lestnitsa')],
@@ -67,13 +83,14 @@ async def nizniy_handler(callback: types.CallbackQuery):
         [InlineKeyboardButton(text='Нижегородская ярмарка', callback_data='nizhegorodskaya-yarmarka')],
         [InlineKeyboardButton(text='Собор Александра Невского', callback_data='sobor-aleksandra-nevskogo')],
         [InlineKeyboardButton(text='Рождественская церковь', callback_data='rozhdestvenskaya-tserkov')],
+        [InlineKeyboardButton(text='🏠 Назад', callback_data='back_to_start')],
+        [InlineKeyboardButton(text='← Главное меню', callback_data='main_menu')]
     ])
-    await callback.answer()
-    await bot.send_message(chat_id=callback.message.chat.id, text="Выберите достопримечательность Нижнего Новгорода:", reply_markup=keyboard)
-
+    await bot.send_message(callback.message.chat.id, "Выберите достопримечательность Нижнего Новгорода:", reply_markup=keyboard)
 
 @dp.callback_query(lambda c: c.data in ['nizhegorodskiy-kreml', 'chkalovskaya-lestnitsa', 'bolshaya-pokrovskaya-ulitsa', 'nizhegorodskaya-yarmarka', 'sobor-aleksandra-nevskogo', 'rozhdestvenskaya-tserkov'])
 async def nn_dostoprim_handler(callback: types.CallbackQuery):
+    await callback.answer()
     sights = {
         'nizhegorodskiy-kreml': 'Нижегородский Кремль',
         'chkalovskaya-lestnitsa': 'Чкаловская лестница',
@@ -93,16 +110,15 @@ async def nn_dostoprim_handler(callback: types.CallbackQuery):
         content = f"Информация о {sights.get(sight_name, sight_name)} временно недоступна."
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='Назад к Нижнему Новгороду', callback_data='nizniy')]
+        [InlineKeyboardButton(text='Назад к Нижнему Новгороду', callback_data='nizniy')],
+        [InlineKeyboardButton(text='🏠 Назад', callback_data='back_to_start')],
+        [InlineKeyboardButton(text='← Главное меню', callback_data='main_menu')]
     ])
-    await callback.answer()
-    await bot.send_message(chat_id=callback.message.chat.id, text=content, reply_markup=keyboard)
-
-
-
+    await bot.send_message(callback.message.chat.id, content, reply_markup=keyboard)
 
 @dp.callback_query(lambda c: c.data == 'directions')
 async def directions_handler(callback: types.CallbackQuery):
+    await callback.answer()
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text='Павлово', callback_data='pavlovo')],
         [InlineKeyboardButton(text='Ичалки', callback_data='ichalki')],
@@ -128,12 +144,30 @@ async def directions_handler(callback: types.CallbackQuery):
         [InlineKeyboardButton(text='Станция Железнодорожная (Петрякша)', callback_data='stantsiya-zheleznodorozhnaya-petryaksha')],
         [InlineKeyboardButton(text='Васильсурск', callback_data='vasilsursk')],
         [InlineKeyboardButton(text='Лукоянов', callback_data='lukoyanov')],
+        [InlineKeyboardButton(text='🏠 Назад', callback_data='back_to_start')],
+        [InlineKeyboardButton(text='← Главное меню', callback_data='main_menu')]
     ])
+    await bot.send_message(callback.message.chat.id, "Выберите направление в Нижегородской области:", reply_markup=keyboard)
+
+@dp.callback_query(lambda c: c.data == 'back_to_start')
+async def back_to_start_handler(callback: types.CallbackQuery):
     await callback.answer()
-    await bot.send_message(chat_id=callback.message.chat.id, text="Выберите направление в Нижегородской области:", reply_markup=keyboard)
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text='Нижний Новгород', callback_data='nizniy')],
+        [InlineKeyboardButton(text='Нижегородская Область', callback_data='directions')],
+        [InlineKeyboardButton(text='← Главное меню', callback_data='main_menu')]
+    ])
+    photo = FSInputFile(WELCOME_PHOTO_PATH)
+    await bot.send_photo(
+        callback.message.chat.id,
+        photo=photo,
+        caption='Здравствуйте! Это бот-путеводитель по Нижегородской области, выберите направление:',
+        reply_markup=keyboard
+    )
 
 @dp.callback_query(lambda c: c.data in ['pavlovo', 'ichalki', 'boldino', 'bogorodsk', 'kstovo', 'bor', 'arzamas', 'zavolzhye', 'grodets', 'lyskovo', 'semenov', 'diveevo', 'ostrovo-voznesenskoe', 'ozero-svetloyar', 'gorkovskoe-more', 'dzerzhinsk', 'chkalovsk', 'sergach', 'medvezhiy-ugol-balahna', 'balahna', 'peshelanskiy-gipsovyy-karer', 'stantsiya-zheleznodorozhnaya-petryaksha', 'vasilsursk', 'lukoyanov'])
 async def city_handler(callback: types.CallbackQuery):
+    await callback.answer()
     cities = {
         'pavlovo': 'Павлово',
         'ichalki': 'Ичалки',
@@ -167,13 +201,15 @@ async def city_handler(callback: types.CallbackQuery):
         [InlineKeyboardButton(text='куда сходить', callback_data=f'{callback.data}_sights')],
         [InlineKeyboardButton(text='жилье', callback_data=f'{callback.data}_housing')],
         [InlineKeyboardButton(text='кафе', callback_data=f'{callback.data}_cafe')],
-        [InlineKeyboardButton(text='как добраться', callback_data=f'{callback.data}_transport')]
+        [InlineKeyboardButton(text='как добраться', callback_data=f'{callback.data}_transport')],
+        [InlineKeyboardButton(text='🏠 Назад', callback_data='directions')],
+        [InlineKeyboardButton(text='← Главное меню', callback_data='main_menu')]
     ])
-    await callback.answer()
-    await bot.send_message(chat_id=callback.message.chat.id, text=text, reply_markup=keyboard)
+    await bot.send_message(callback.message.chat.id, text, reply_markup=keyboard)
 
 @dp.callback_query(lambda c: c.data.endswith(('_sights', '_housing', '_cafe', '_transport')))
 async def content_handler(callback: types.CallbackQuery):
+    await callback.answer()
     parts = callback.data.rsplit('_', 1)
     city = parts[0]
     suffix = parts[1]
@@ -193,10 +229,11 @@ async def content_handler(callback: types.CallbackQuery):
         content = f"Файл {filename} не найден для {city}."
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='Назад к направлению', callback_data=city)]
+        [InlineKeyboardButton(text='Назад к направлению', callback_data=city)],
+        [InlineKeyboardButton(text='🏠 Назад', callback_data='directions')],
+        [InlineKeyboardButton(text='← Главное меню', callback_data='main_menu')]
     ])
-    await callback.answer()
-    await bot.send_message(chat_id=callback.message.chat.id, text=content, reply_markup=keyboard)
+    await bot.send_message(callback.message.chat.id, content, reply_markup=keyboard)
 
 async def main():
     await dp.start_polling(bot)
