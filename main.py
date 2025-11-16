@@ -68,12 +68,28 @@ async def directions_handler(callback: types.CallbackQuery):
         [InlineKeyboardButton(text='Бор', callback_data='bor')],
         [InlineKeyboardButton(text='Арзамас', callback_data='arzamas')],
         [InlineKeyboardButton(text='Заволжье', callback_data='zavolzhye')],
+        [InlineKeyboardButton(text='Гродец', callback_data='grodeс')],
+        [InlineKeyboardButton(text='Лысково', callback_data='lyskovo')],
+        [InlineKeyboardButton(text='Семенов', callback_data='semenov')],
+        [InlineKeyboardButton(text='Дивеево', callback_data='diveevo')],
+        [InlineKeyboardButton(text='Острово-Вознесенское', callback_data='ostrovo-voznesenskoe')],
+        [InlineKeyboardButton(text='Озеро Светлояр', callback_data='ozero-svetloyar')],
+        [InlineKeyboardButton(text='Горьковское море', callback_data='gorkovskoe-more')],
+        [InlineKeyboardButton(text='Дзержинск', callback_data='dzerzhinsk')],
+        [InlineKeyboardButton(text='Чкаловск', callback_data='chkalovsk')],
+        [InlineKeyboardButton(text='Сергач', callback_data='sergaч')],
+        [InlineKeyboardButton(text='Медвежий угол (Балахна)', callback_data='medvezhiy-ugol-balahna')],
+        [InlineKeyboardButton(text='Балахна', callback_data='balahna')],
+        [InlineKeyboardButton(text='Пешеланский гипсовый карьер', callback_data='peshelanskiy-gipsovyy-karer')],
+        [InlineKeyboardButton(text='Станция Железнодорожная (Петрякша)', callback_data='stantsiya-zheleznodorozhnaya-petryaksha')],
+        [InlineKeyboardButton(text='Васильсурск', callback_data='vasilsursk')],
+        [InlineKeyboardButton(text='Лукоянов', callback_data='lukoyanov')],
     ])
     await callback.message.edit_reply_markup(reply_markup=keyboard)
     await callback.answer()
 
 # сюда доавблять новые города
-@dp.callback_query(lambda c: c.data in ['pavlovo', 'ichalki', 'boldino', 'bogorodsk', 'kstovo', 'bor', 'arzamas', 'zavolzhye'])
+@dp.callback_query(lambda c: c.data in ['pavlovo', 'ichalki', 'boldino', 'bogorodsk', 'kstovo', 'bor', 'arzamas', 'zavolzhye', 'grodeс', 'lyskovo', 'semenov', 'diveevo', 'ostrovo-voznesenskoe', 'ozero-svetloyar', 'gorkovskoe-more', 'dzerzhinsk', 'chkalovsk', 'sergaч', 'medvezhiy-ugol-balahna', 'balahna', 'peshelanskiy-gipsovyy-karer', 'stantsiya-zheleznodorozhnaya-petryaksha', 'vasilsursk', 'lukoyanov'])
 async def city_handler(callback: types.CallbackQuery):
     cities = {
         # сюда доавблять новые города
@@ -85,6 +101,22 @@ async def city_handler(callback: types.CallbackQuery):
         'bor': 'Бор',
         'arzamas': 'Арзамас',
         'zavolzhye': 'Заволжье',
+        'grodeс': 'Гродец',
+        'lyskovo': 'Лысково',
+        'semenov': 'Семенов',
+        'diveevo': 'Дивеево',
+        'ostrovo-voznesenskoe': 'Острово-Вознесенское',
+        'ozero-svetloyar': 'Озеро Светлояр',
+        'gorkovskoe-more': 'Горьковское море',
+        'dzerzhinsk': 'Дзержинск',
+        'chkalovsk': 'Чкаловск',
+        'sergaч': 'Сергач',
+        'medvezhiy-ugol-balahna': 'Медвежий угол (Балахна)',
+        'balahna': 'Балахна',
+        'peshelanskiy-gipsovyy-karer': 'Пешеланский гипсовый карьер',
+        'stantsiya-zheleznodorozhnaya-petryaksha': 'Станция Железнодорожная (Петрякша)',
+        'vasilsursk': 'Васильсурск',
+        'lukoyanov': 'Лукоянов',
     }
     city = cities.get(callback.data, 'Город')
     text = f"go {city}"
