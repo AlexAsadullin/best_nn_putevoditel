@@ -15,6 +15,7 @@ DB_URL = 'sqlite:///users.db'
 engine = create_engine(DB_URL)
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -23,8 +24,10 @@ class User(Base):
     fio = Column(String)
     dob = Column(Date)
 
+
 Base.metadata.create_all(engine)
 SessionLocal = sessionmaker(bind=engine)
+
 
 @contextmanager
 def get_db():
@@ -34,8 +37,10 @@ def get_db():
     finally:
         db.close()
 
+
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
+
 
 @dp.message(Command('start'))
 async def start_handler(message: types.Message):
@@ -47,8 +52,10 @@ async def start_handler(message: types.Message):
             db.commit()
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='Нижний Новгород', callback_data='nizniy')],
-        [InlineKeyboardButton(text='Нижегородская Область', callback_data='directions')],
+        [InlineKeyboardButton(text='О регионе', callback_data='about_region')],
+        [InlineKeyboardButton(text='Нижний Новгород - локации', callback_data='nizniy')],
+        [InlineKeyboardButton(text='Нижегородская Область - города', callback_data='directions')],
+        [InlineKeyboardButton(text='Готовые маршруты', callback_data='ready_routes')],
     ])
     photo = FSInputFile(WELCOME_PHOTO_PATH)
     await bot.send_photo(
@@ -58,12 +65,15 @@ async def start_handler(message: types.Message):
         reply_markup=keyboard
     )
 
+
 @dp.callback_query(lambda c: c.data == 'main_menu')
 async def main_menu_handler(callback: types.CallbackQuery):
     await callback.answer()
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='Нижний Новгород', callback_data='nizniy')],
-        [InlineKeyboardButton(text='Нижегородская Область', callback_data='directions')],
+        [InlineKeyboardButton(text='О регионе', callback_data='about_region')],
+        [InlineKeyboardButton(text='Нижний Новгород - локации', callback_data='nizniy')],
+        [InlineKeyboardButton(text='Нижегородская Область - города', callback_data='directions')],
+        [InlineKeyboardButton(text='Готовые маршруты', callback_data='ready_routes')],
     ])
     photo = FSInputFile(WELCOME_PHOTO_PATH)
     await bot.send_photo(
@@ -72,6 +82,7 @@ async def main_menu_handler(callback: types.CallbackQuery):
         caption='Здравствуйте! Это бот-путеводитель по Нижегородской области, выберите направление:',
         reply_markup=keyboard
     )
+
 
 @dp.callback_query(lambda c: c.data == 'nizniy')
 async def nizniy_handler(callback: types.CallbackQuery):
@@ -86,9 +97,13 @@ async def nizniy_handler(callback: types.CallbackQuery):
         [InlineKeyboardButton(text='← Назад', callback_data='back_to_start')],
         [InlineKeyboardButton(text='🏠 Главное меню', callback_data='main_menu')]
     ])
-    await bot.send_message(callback.message.chat.id, "Выберите достопримечательность Нижнего Новгорода:", reply_markup=keyboard)
+    await bot.send_message(callback.message.chat.id, "Выберите достопримечательность Нижнего Новгорода:",
+                           reply_markup=keyboard)
 
-@dp.callback_query(lambda c: c.data in ['nizhegorodskiy-kreml', 'chkalovskaya-lestnitsa', 'bolshaya-pokrovskaya-ulitsa', 'nizhegorodskaya-yarmarka', 'sobor-aleksandra-nevskogo', 'rozhdestvenskaya-tserkov'])
+
+@dp.callback_query(lambda c: c.data in ['nizhegorodskiy-kreml', 'chkalovskaya-lestnitsa', 'bolshaya-pokrovskaya-ulitsa',
+                                        'nizhegorodskaya-yarmarka', 'sobor-aleksandra-nevskogo',
+                                        'rozhdestvenskaya-tserkov'])
 async def nn_dostoprim_handler(callback: types.CallbackQuery):
     await callback.answer()
     sights = {
@@ -115,6 +130,7 @@ async def nn_dostoprim_handler(callback: types.CallbackQuery):
     ])
     await bot.send_message(callback.message.chat.id, content, reply_markup=keyboard)
 
+
 @dp.callback_query(lambda c: c.data == 'directions')
 async def directions_handler(callback: types.CallbackQuery):
     await callback.answer()
@@ -140,20 +156,25 @@ async def directions_handler(callback: types.CallbackQuery):
         [InlineKeyboardButton(text='Медвежий угол (Балахна)', callback_data='medvezhiy-ugol-balahna')],
         [InlineKeyboardButton(text='Балахна', callback_data='balahna')],
         [InlineKeyboardButton(text='Пешеланский гипсовый карьер', callback_data='peshelanskiy-gipsovyy-karer')],
-        [InlineKeyboardButton(text='Станция Железнодорожная (Петрякша)', callback_data='stantsiya-zheleznodorozhnaya-petryaksha')],
+        [InlineKeyboardButton(text='Станция Железнодорожная (Петрякша)',
+                              callback_data='stantsiya-zheleznodorozhnaya-petryaksha')],
         [InlineKeyboardButton(text='Васильсурск', callback_data='vasilsursk')],
         [InlineKeyboardButton(text='Лукоянов', callback_data='lukoyanov')],
         [InlineKeyboardButton(text='← Назад', callback_data='back_to_start')],
         [InlineKeyboardButton(text='🏠 Главное меню', callback_data='main_menu')]
     ])
-    await bot.send_message(callback.message.chat.id, "Выберите направление в Нижегородской области:", reply_markup=keyboard)
+    await bot.send_message(callback.message.chat.id, "Выберите направление в Нижегородской области:",
+                           reply_markup=keyboard)
+
 
 @dp.callback_query(lambda c: c.data == 'back_to_start')
 async def back_to_start_handler(callback: types.CallbackQuery):
     await callback.answer()
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='Нижний Новгород', callback_data='nizniy')],
-        [InlineKeyboardButton(text='Нижегородская Область', callback_data='directions')]
+        [InlineKeyboardButton(text='О регионе', callback_data='about_region')],
+        [InlineKeyboardButton(text='Нижний Новгород - локации', callback_data='nizniy')],
+        [InlineKeyboardButton(text='Нижегородская Область - города', callback_data='directions')],
+        [InlineKeyboardButton(text='Готовые маршруты', callback_data='ready_routes')],
     ])
     photo = FSInputFile(WELCOME_PHOTO_PATH)
     await bot.send_photo(
@@ -163,7 +184,25 @@ async def back_to_start_handler(callback: types.CallbackQuery):
         reply_markup=keyboard
     )
 
-@dp.callback_query(lambda c: c.data in ['pavlovo', 'ichalki', 'boldino', 'bogorodsk', 'kstovo', 'bor', 'arzamas', 'zavolzhye', 'grodets', 'lyskovo', 'semenov', 'diveevo', 'ostrovo-voznesenskoe', 'ozero-svetloyar', 'gorkovskoe-more', 'dzerzhinsk', 'chkalovsk', 'sergach', 'medvezhiy-ugol-balahna', 'balahna', 'peshelanskiy-gipsovyy-karer', 'stantsiya-zheleznodorozhnaya-petryaksha', 'vasilsursk', 'lukoyanov'])
+
+@dp.callback_query(lambda c: c.data == 'about_region')
+async def about_region_handler(callback: types.CallbackQuery):
+    await callback.answer()
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text='← Назад', callback_data='back_to_start')],
+        [InlineKeyboardButton(text='🏠 Главное меню', callback_data='main_menu')]
+    ])
+    await bot.send_message(callback.message.chat.id,
+                           "Приветствуем вас в Нижнем Новгороде — городе с тысячелетней историей на слиянии Волги и Оки, где жили и творили великие нижегородцы: Козьма Минин, герой ополчения 1612 года; Максим Горький, классик литературы; Андрей Сахаров, нобелевский лауреат и правозащитник; Валерий Чкалов, легендарный лётчик.\nНижегородская область — сердце Волжского федерального округа в центре европейской России (площадь 76,6 тыс. км², население 3,04 млн чел. на 2025 г., 80% городского). География: умеренный континентальный климат, 48% лесов, 41% сельхозугодий, ресурсы — песок с титаном-цирконием, глина, гипс, торф, соль, древесина. Экономика: 7-е место по промышленному производству (машиностроение, химия, нефтехимия, деревообработка — 83% ВРП). Культура: православие (69%), древние монастыри (Серафимо-Дивеевский), ярмарки, кремль ЮНЕСКО.\nПогрузитесь в интерактивное путешествие: от кремлёвских стен до волжских просторов!",
+                           reply_markup=keyboard)
+
+
+@dp.callback_query(
+    lambda c: c.data in ['pavlovo', 'ichalki', 'boldino', 'bogorodsk', 'kstovo', 'bor', 'arzamas', 'zavolzhye',
+                         'grodets', 'lyskovo', 'semenov', 'diveevo', 'ostrovo-voznesenskoe', 'ozero-svetloyar',
+                         'gorkovskoe-more', 'dzerzhinsk', 'chkalovsk', 'sergach', 'medvezhiy-ugol-balahna', 'balahna',
+                         'peshelanskiy-gipsovyy-karer', 'stantsiya-zheleznodorozhnaya-petryaksha', 'vasilsursk',
+                         'lukoyanov'])
 async def city_handler(callback: types.CallbackQuery):
     await callback.answer()
     cities = {
@@ -205,6 +244,7 @@ async def city_handler(callback: types.CallbackQuery):
     ])
     await bot.send_message(callback.message.chat.id, text, reply_markup=keyboard)
 
+
 @dp.callback_query(lambda c: c.data.endswith(('_sights', '_housing', '_cafe', '_transport')))
 async def content_handler(callback: types.CallbackQuery):
     await callback.answer()
@@ -232,8 +272,10 @@ async def content_handler(callback: types.CallbackQuery):
     ])
     await bot.send_message(callback.message.chat.id, content, reply_markup=keyboard)
 
+
 async def main():
     await dp.start_polling(bot)
+
 
 if __name__ == '__main__':
     asyncio.run(main())
